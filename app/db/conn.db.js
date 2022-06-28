@@ -1,7 +1,7 @@
 // const {MongoClient} = require('mongodb')
-const  mongoose = require('mongoose')
+const mongoose = require('mongoose')
 require("dotenv").config()
-const connectionString = process.env.MONGO_URI
+const connectionString = (process.env.ENV === "local" ? process.env.MONGO_URI_LOCAL : process.env.MONGO_URI)
 
 console.log(process.env.MONGO_URI)
 
@@ -20,7 +20,7 @@ module.exports = {
             //     if (error || !db) throw Error(error.message)
             //     dbConnection = db.db('trackingDb');
             // })
-            await mongoose.connect(process.env.MONGO_URI,  { useNewUrlParser: true });
+            await mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true});
         } catch (e) {
             console.log("error connecting")
             console.log(e)
