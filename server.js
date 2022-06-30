@@ -35,7 +35,7 @@ app.use(express.static('public'))
 const TIMEOUT = 10000;
 
 const conn = require('./app/db/conn.db.js');
-const {router} = require("express/lib/application");
+const router = express.Router();
 conn.mongoConnect().then(function () {
     if (!conn.isConnected()) {
         console.error("(" + scriptName + ")mongodb status " + conn.mongoStatus())
@@ -45,6 +45,9 @@ conn.mongoConnect().then(function () {
     console.log("(" + scriptName + ")" + "mongodb database connected");
 
     app.use("/api", enableCORS, routes)
+    app.get('/', enableCORS, (req, res) => {
+        res.sendFile(path.resolve(__dirname + '/app/views/index.html'))
+    })
 
     // Error handler
     app.use(function (err, req, res, next) {

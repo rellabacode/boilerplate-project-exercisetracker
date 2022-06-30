@@ -4,10 +4,6 @@ const {userCtrl, exerciseCtrl, infoCtrl} = require("../controllers")
 const path = require("path")
 const scriptName = path.basename(__filename);
 
-router.get('/', (req,
-                 res) => {
-    res.sendFile(path.resolve(__dirname + '/../views/index.html'))
-})
 
 const API_USERS = '/users'
 const FIND_USER_BY_ID = API_USERS + '/:_id'
