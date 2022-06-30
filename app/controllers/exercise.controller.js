@@ -13,7 +13,7 @@ const INVALID_DATE = "Invalid Date"
  * @param res
  * @returns {Promise<void>}
  */
-module.exports.create = async function (req, res) {
+module.exports.create = async function (req, res, next) {
     // try {
     console.log("exercise.controller::create exercise" + new Date())
 
@@ -46,7 +46,8 @@ module.exports.create = async function (req, res) {
 
             if (date.toString() === INVALID_DATE) {
                 console.log("fecha invalida, retornando")
-                return res.status(400).json({error: INVALID_DATE})
+                next({status: 400, message: INVALID_DATE})
+                // return res.status(400).json({error: INVALID_DATE})
             }
 
             console.log("fecha valida")

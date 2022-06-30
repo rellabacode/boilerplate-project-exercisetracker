@@ -4,7 +4,7 @@ const {mongoose} = require("mongoose");
 const {log} = require("debug");
 
 
-module.exports.create = async function (req, res) {
+module.exports.create = async function (req, res, next) {
     console.log(req.baseUrl)
     console.log(req.originalUrl)
     console.log(req.params)
@@ -22,7 +22,7 @@ module.exports.create = async function (req, res) {
     }
 }
 
-module.exports.getAll = async function (req, res) {
+module.exports.getAll = async function (req, res, next) {
     try {
         let users = await userService.getAll()
         res.status(200).send(users)
@@ -37,7 +37,7 @@ module.exports.getAll = async function (req, res) {
  * @param res
  * @returns {Promise<void>}
  */
-findById = async function (req, res) {
+findById = async function (req, res, next) {
     console.log("user.controller::findById" + new Date())
     try {
         let idMongoose = new mongoose.Types.ObjectId(req.params["_id"])

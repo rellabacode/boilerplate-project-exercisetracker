@@ -1,9 +1,15 @@
 // const {MongoClient} = require('mongodb')
-const mongoose = require('mongoose')
-require("dotenv").config()
-const connectionString = (process.env.HOME === 'C:\\Users\\josem' ? process.env.MONGO_URI_LOCAL : process.env.MONGO_URI)
+let mongoose;
+try {
+    mongoose = require('mongoose')
+} catch (e) {
+    console.error(e)
+}
+const path = require('path');
+const scriptName = path.basename(__filename);
 
-console.log(connectionString)
+require("dotenv").config()
+const connectionString = process.env.MONGO_URI
 
 // const client = new MongoClient(connectionString, {
 //     useNewUrlParser: true,
@@ -20,9 +26,10 @@ module.exports = {
             //     if (error || !db) throw Error(error.message)
             //     dbConnection = db.db('trackingDb');
             // })
+            console.log("(" + scriptName + ")connecting to " + connectionString)
             await mongoose.connect(connectionString, {useNewUrlParser: true});
         } catch (e) {
-            console.log("error connecting")
+            console.error("(" + scriptName + ")error connecting")
             console.log(e)
         }
     },
@@ -30,11 +37,16 @@ module.exports = {
         return mongoose.connection;
     },
 
-    isConnected: function () {
+    mongoStatus: function () {
         /*
         0: disconnected, 1: connected
         2: connecting, 3: disconnecting
         */
         return mongoose.connection.readyState
+    },
+
+    isConnected: function () {
+        return mongoose.connection.readyState === 1
     }
+
 }
