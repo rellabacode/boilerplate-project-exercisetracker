@@ -1,10 +1,13 @@
 const {ExerciseModel} = require('../models/index.js')
 const {Schema} = require("mongoose");
 const {UserModel, User} = require("../models/user.model");
+const path = require("path")
+const scriptName = path.basename(__filename)
 
 const create = (user, description, duration, date) => {
+    let baseLog = "(" + scriptName + ")::create exercise "
     return new Promise(async function (resolve, reject) {
-        console.log("id usuario " + user._id)
+        console.log(baseLog+"id usuario " + user._id)
 
         const exercise = new ExerciseModel({
             username: user.username,
@@ -23,7 +26,7 @@ const create = (user, description, duration, date) => {
 
             console.log(newExercise)
 
-            if (newExercise){
+            if (newExercise) {
                 newExercise.date = new Date(newExercise.date).toDateString()
                 resolve(newExercise)
             }

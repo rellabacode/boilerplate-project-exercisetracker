@@ -29,7 +29,7 @@ module.exports.create = async function (req, res, next) {
     console.log(userId)
 
     console.log(baseLog+"buscando usuario "+baseUrl(req) + "/api/users/" + userId)
-    axios.get(baseUrl(req) + "/api/users/" + userId).then(async function (user) {
+    axios.get(baseUrl2(req) + "/api/users/" + userId).then(async function (user) {
         console.log(baseLog+"res axios")
         console.log(user)
 
@@ -37,37 +37,36 @@ module.exports.create = async function (req, res, next) {
             let description = req.body["description"]
             let duration = req.body["duration"]
 
-            if (!description || !description.trim().length) return res.status(400).json({error: "Missing description"})
-            if (!duration || isNaN(parseInt(duration))) return res.status(400).json({error: "Duration must be an Integer"})
+            if (!description || !description.trim().length) next({status: 400, message: "Missing description"})
+            if (!duration || isNaN(parseInt(duration))) next({status: 400, message: "Duration must be an Integer"})
 
             let date = new Date();
             if (req.body["date"]) date = new Date(req.body["date"]);
 
-            console.log("exercise date " + date.toDateString())
-            console.log(date.toString() === INVALID_DATE)
+            console.log(baseLog+"exercise date " + date.toDateString())
 
             if (date.toString() === INVALID_DATE) {
-                console.log("fecha invalida, retornando")
+                console.log(baseLog+"fecha invalida, retornando")
                 next({status: 400, message: INVALID_DATE})
                 // return res.status(400).json({error: INVALID_DATE})
             }
 
-            console.log("fecha valida")
             console.log(user.data._id, description, duration, date)
 
             try {
                 let exercise = await exerciseService.create(user.data, description, duration, date.toDateString())
                 return res.status(200).send(exercise)
             } catch (e) {
-                console.log(e)
-                return res.status(500).json({error: e.message})
+                console.error(e)
+                next({status: 500, message: e.message})
             }
 
         }
-        return res.status(400).json({error: "Invalid User _id"})
+        next({status: 400, message: "Invalid User _id"})
+        // return res.status(400).json({error: })
 
     }).catch(function (e) {
-        console.log("axios error")
+        console.error("axios error")
         console.error(e)
         return res.status(e.response.status).json({error: e.response.data})
     })
