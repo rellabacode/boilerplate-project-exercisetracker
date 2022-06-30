@@ -3,7 +3,8 @@ const controllers = require("../controllers")
 const {mongoose} = require('mongoose')
 const axios = require('axios')
 const {baseUrl, baseUrl2} = require('../utils/helper.util.js')
-
+const path = require("path")
+const scriptName = path.basename(__filename);
 
 const INVALID_DATE = "Invalid Date"
 
@@ -14,21 +15,22 @@ const INVALID_DATE = "Invalid Date"
  * @returns {Promise<void>}
  */
 module.exports.create = async function (req, res, next) {
+    let baseLog = "("+scriptName+")::create exercise "
     // try {
-    console.log("exercise.controller::create exercise" + new Date())
+    console.log(baseLog + new Date())
 
     // await controllers.userCtrl.findById(req, res).then(res => {
     //
     // })
-    console.log("req axios")
+    console.log(baseLog+"parametros body")
     console.log(req.body)
 
     let userId = req.body[":_id"];
     console.log(userId)
 
-
+    console.log(baseLog+"buscando usuario "+baseUrl(req) + "/api/users/" + userId)
     axios.get(baseUrl(req) + "/api/users/" + userId).then(async function (user) {
-        console.log("--------exercise.controller--  res axios")
+        console.log(baseLog+"res axios")
         console.log(user)
 
         if (user.data && user.data._id) {
@@ -66,6 +68,7 @@ module.exports.create = async function (req, res, next) {
 
     }).catch(function (e) {
         console.log("axios error")
+        console.error(e)
         return res.status(e.response.status).json({error: e.response.data})
     })
 

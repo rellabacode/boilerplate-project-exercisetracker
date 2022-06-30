@@ -2,13 +2,12 @@ const {userService} = require("../services/index.js")
 const {exerciseCtrl} = require("../controllers")
 const {mongoose} = require("mongoose");
 const {log} = require("debug");
-
+const path = require("path")
+const scriptName = path.basename(__filename)
 
 module.exports.create = async function (req, res, next) {
-    console.log(req.baseUrl)
-    console.log(req.originalUrl)
-    console.log(req.params)
-    console.log(req.path)
+    let baseLog = "("+scriptName+")::create user "
+    console.log(baseLog+"parametros body")
     console.log(req.body)
     let username = req.body.username;
     console.log(userService)
