@@ -54,7 +54,7 @@ const findById = async function (req, res, next) {
     }
 
     console.log(baseLog + "param id " + userId)
-    let users = await userService.findById(userId)
+    let users = await userService.findById(userId, next)
     console.log(baseLog + "finded user ")
     console.log(users)
 

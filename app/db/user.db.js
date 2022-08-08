@@ -22,7 +22,6 @@ const create = async (username) => {
         console.log(baseLog + "user to create")
         console.log(user)
 
-
         try {
             const newUser = await user.save()
             console.log(baseLog + "user created")
@@ -58,30 +57,23 @@ const create = async (username) => {
  * @param id
  * @returns {Promise<unknown>}
  */
-const findById = (id) => {
+const findById = async (id) => {
     let baseLog = "(" + scriptName + ")::findById "
     let baseLogError = "(" + scriptName + ")::findById ERROR "
-    return new Promise(async (resolve, reject) => {
-        console.log(baseLog + " id " + id)
+    console.log(baseLog + " id " + id)
 
-        try {
-            const user = await User.findById(id).exec()
+    try {
+        const user = await User.findById(id).exec()
 
-            console.log(baseLog + "returning user:")
-            console.log(user)
-            if (!user)
-                return reject({status: 404, message: " User has not been found "});
-
-            resolve(user);
-            console.log("resolve llamado")
-            // return user
-        } catch (e) {
-            console.error(baseLogError)
-            console.error(e.errmsg)
-            return reject({status: 500, message: e.code + " Error finding user with id " + id});
-        }
-
-    })
+        console.log(baseLog + "returning user:")
+        console.log(user)
+        return user
+    } catch (e) {
+        console.error(baseLogError)
+        console.error(e.errmsg)
+        // return reject({status: 500, message: e.code + " Error finding user with id " + id});ç
+        return null
+    }
 }
 
 const findByUsername = async (username) => {

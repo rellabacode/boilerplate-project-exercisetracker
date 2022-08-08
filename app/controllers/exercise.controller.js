@@ -25,10 +25,13 @@ const create = async function (req, res, next) {
     // await controllers.userCtrl.findById(req, res).then(res => {
     //
     // })
-    console.log(baseLog + "body parameters")
-    console.log(req.body)
+    // console.log(baseLog + "body parameters")
+    // console.log(req.body)
+    // console.log(req.url)
+    // console.log(req.params[":_id"])
+    // console.log(req.params)
 
-    let userId = req.body[":_id"];
+    let userId = req.params["_id"];
 
     console.log("userId "+userId)
 
@@ -49,7 +52,7 @@ const create = async function (req, res, next) {
 
     if (date.toString() === INVALID_DATE) {
         console.log(baseLog + "invalid date, returning")
-        next({status: 400, message: INVALID_DATE})
+        return next({status: 400, message: INVALID_DATE})
         // return res.status(400).json({error: INVALID_DATE})
     }
 
@@ -58,7 +61,11 @@ const create = async function (req, res, next) {
             headers: {
                 'user-agent': 'not axios',
             }
+        }).catch(function (error) {
+            console.error(baseLogError+error.message)
+            return next({status: 400, message: error.message})
         })
+
         console.log(baseLog + "res axios")
         console.log(user.data)
 

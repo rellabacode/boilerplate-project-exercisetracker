@@ -19,12 +19,8 @@ const create = function (username) {
 
 const findById = function (username) {
     let baseLog = "(" + scriptName + "):: " + arguments.callee.name + " "
-
     console.log(baseLog)
-
     return userDb.findById(username)
-
-
 
     // try {
     //
@@ -34,7 +30,6 @@ const findById = function (username) {
     // } catch (e) {
     //     console.error(e)
     // }
-
 }
 
 /**
