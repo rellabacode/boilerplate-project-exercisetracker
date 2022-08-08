@@ -6,8 +6,9 @@ const scriptName = path.basename(__filename)
 
 const create = (user, description, duration, date) => {
     let baseLog = "(" + scriptName + ")::create exercise "
+    let baseLogError = "(" + scriptName + "):: " + arguments.callee.name + " ERROR "
     return new Promise(async function (resolve, reject) {
-        console.log(baseLog+"id usuario " + user._id)
+        console.log(baseLog + "id user " + user._id)
 
         const exercise = new ExerciseModel({
             username: user.username,
@@ -16,14 +17,17 @@ const create = (user, description, duration, date) => {
             date: date
         })
 
+        console.log(baseLog + "exercise to persist")
         console.log(exercise)
 
         try {
             let saved = await exercise.save()
+            console.log(baseLog + "exercise saved")
             console.log(saved)
 
             let newExercise = await ExerciseModel.findById(saved._id).select("-__v").exec()
 
+            console.log(baseLog + "exercise modified to return")
             console.log(newExercise)
 
             if (newExercise) {
@@ -31,10 +35,28 @@ const create = (user, description, duration, date) => {
                 resolve(newExercise)
             }
 
-            reject("Unknown error saving exercise")
+            reject({status: 500, message: "Unknown error saving exercise"})
             // console.log("ejercicio creado")
             // console.log(newExercise)
 
+        } catch (e) {
+            console.error(baseLogError)
+            console.error(e.errmsg)
+            console.error(e.code)
+
+            reject({status: 500, message: "Error creating user exercise"})
+        }
+    })
+}
+
+const deleteAll = () => {
+    let baseLog = "(" + scriptName + ")::delete all "
+    console.log(baseLog)
+    return new Promise(async function (resolve, reject) {
+
+        try {
+            let newExercise = await ExerciseModel.remove({}).exec()
+            resolve(newExercise)
         } catch (e) {
             console.error(e)
             reject(e.message)
@@ -43,5 +65,6 @@ const create = (user, description, duration, date) => {
 }
 
 module.exports = {
-    create
+    create,
+    deleteAll
 }

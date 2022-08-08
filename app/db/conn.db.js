@@ -6,6 +6,8 @@ try {
     console.error(e)
 }
 const path = require('path');
+const {Error} = require("mongoose");
+const {UserModel, ExerciseModel} = require("../models");
 const scriptName = path.basename(__filename);
 
 require("dotenv").config()
@@ -20,6 +22,29 @@ const connectionString = process.env.MONGO_URI
 let dbConnection;
 
 module.exports = {
+    mongoDrop: async function () {
+        try {
+            console.log("(" + scriptName + ")droping content")
+            await mongoose.connection.db.dropDatabase(function (err, result) {
+                if (err) throw Error(err)
+                console.log("(" + scriptName + ")dropping result " + result)
+            })
+
+
+        } catch (e) {
+            console.error(e)
+        }
+    },
+
+    mongoBuildIndexes: async function () {
+        try {
+            await UserModel.syncIndexes()
+            await ExerciseModel.syncIndexes()
+        } catch (e) {
+            console.error(e)
+        }
+    },
+
     mongoConnect: async function () {
         try {
             // await client.connect(async function (error, db) {
@@ -27,7 +52,7 @@ module.exports = {
             //     dbConnection = db.db('trackingDb');
             // })
             console.log("(" + scriptName + ")connecting to " + connectionString)
-            await mongoose.connect(connectionString, {useNewUrlParser: true});
+            await mongoose.connect(connectionString, {useNewUrlParser: true, autoIndex: true});
         } catch (e) {
             console.error("(" + scriptName + ")error connecting")
             console.log(e)

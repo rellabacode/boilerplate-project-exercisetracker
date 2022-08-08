@@ -15,7 +15,13 @@ const baseUrl2 = function (req) {
     return baseUrl2
 }
 
+const isDebug = function () {
+    return process.env.DEBUG === "true"
+}
+
+
 module.exports = {
     baseUrl,
-    baseUrl2
+    baseUrl2,
+    isDebug
 }

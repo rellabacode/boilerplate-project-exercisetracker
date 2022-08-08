@@ -1,10 +1,11 @@
-const  mongoose = require('mongoose')
-const {Schema} =  mongoose
+const mongoose = require('mongoose')
+const {Schema} = mongoose
 let userSchema = new Schema({
     username: {
         type: String,
         maxLength: 50,
-        required: [true, "username is mandatory"]
+        required: [true, "username is mandatory"],
+        unique: true
     },
 })
 let UserModel = mongoose.model('User', userSchema)

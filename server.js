@@ -43,32 +43,42 @@ conn.mongoConnect().then(function () {
     }
 
     console.log("(" + scriptName + ")" + "mongodb database connected");
+    conn.mongoDrop().then(function () {
+        console.log("(" + scriptName + ")" + "mongodb database dropped");
 
-    app.use("/api", enableCORS, routes)
-    app.get('/', enableCORS, (req, res) => {
-        res.sendFile(path.resolve(__dirname + '/app/views/index.html'))
-    })
+        conn.mongoBuildIndexes().then(function () {
+            console.log("(" + scriptName + ")" + "mongodb database indexes synchronized");
 
-    // Error handler
-    app.use(function (err, req, res, next) {
-        console.log("(" + scriptName + ")" + "error handler")
-        if (err) {
-            res.status(err.status || 500).type("txt").send(err.message || "SERVER ERROR");
-        }
-    })
+            app.use("/api", enableCORS, routes)
+            app.get('/', enableCORS, (req, res) => {
+                res.sendFile(path.resolve(__dirname + '/app/views/index.html'))
+            })
 
-    // Unmatched routes handler
-    app.use(function (req, res) {
-        console.log("(" + scriptName + ")" + "unmatched routes handler")
-        if (req.method.toLowerCase() === "options") {
-            res.end();
-        } else {
-            res.status(404).type("txt").send("Not Found");
-        }
-    })
+            // Error handler
+            app.use(function (err, req, res, next) {
+                console.log("(" + scriptName + ")" + "error handler")
+                if (err) {
+                    res.status(err.status || 500).type("txt").send(err.message || "SERVER ERROR");
+                }
+            })
 
-    const listener = app.listen(process.env.PORT || 3000, () => {
-        console.log("(" + scriptName + ")" + 'your app is listening on port ' + listener.address().port)
+            // Unmatched routes handler
+            app.use(function (req, res) {
+                console.log("(" + scriptName + ")" + "unmatched routes handler")
+                if (req.method.toLowerCase() === "options") {
+                    res.end();
+                } else {
+                    res.status(404).type("txt").send("Not Found");
+                }
+            })
+
+            const listener = app.listen(process.env.PORT || 3000, () => {
+                console.log("(" + scriptName + ")" + 'your app is listening on port ' + listener.address().port)
+            })
+        })
+    }).catch(e => {
+        console.error(e)
+        process.exit(1);
     })
 
 }).catch(e => {
