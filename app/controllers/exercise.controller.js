@@ -32,7 +32,7 @@ const create = async function (req, res, next) {
 
     console.log("userId "+userId)
 
-    if (!userId || !userId.trim().length) next({status: 400, message: "Missing :_id"})
+    if (!userId || !userId.trim().length) return next({status: 400, message: "Missing :_id"})
 
     console.log(baseLog + "searching for user " + baseUrl(req) + "/api/users/" + userId)
 
