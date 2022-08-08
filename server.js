@@ -1,4 +1,5 @@
 const express = require('express')
+const http = require('http')
 const app = express()
 const routes = require('./app/routes/index.js')
 // const cors = require('cors')
@@ -48,6 +49,18 @@ conn.mongoConnect().then(function () {
 
         conn.mongoBuildIndexes().then(function () {
             console.log("(" + scriptName + ")" + "mongodb database indexes synchronized");
+
+            // a middleware with no mount path; gets executed for every request to the app
+            app.use(function (req, res, next) {
+                let baseLog = "(Middleware every request) "
+                console.log(baseLog+"user-agent "+req.header("user-agent"))
+                if (req.header("user-agent") === "not axios") return next()
+
+                console.log(baseLog+"original "+JSON.stringify(req.originalUrl))
+                console.log(baseLog+"body "+JSON.stringify(req.body))
+                console.log(baseLog+"params "+JSON.stringify(req.params))
+                next();
+            });
 
             app.use("/api", enableCORS, routes)
             app.get('/', enableCORS, (req, res) => {

@@ -1,6 +1,5 @@
 const {userDb} = require('../db/index.js')
 const {mongoose} = require("mongoose");
-const {userService} = require("./index");
 
 const path = require('path')
 const scriptName = path.basename(__filename)

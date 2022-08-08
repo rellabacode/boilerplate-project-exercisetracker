@@ -66,10 +66,9 @@ const create = async function (req, res, next) {
             return next({status: 400, message: error.message})
         })
 
-        console.log(baseLog + "res axios")
-        console.log(user.data)
+        console.log(baseLog + "res axios ok? "+!!(user && user.data && user.data._id))
 
-        if (user.data && user.data._id) {
+        if (user && user.data && user.data._id) {
             console.log(user.data._id, description, duration, date)
             const exercise = await exerciseService.create(user.data, description, duration, date.toDateString())
             return res.status(200).send(exercise)

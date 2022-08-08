@@ -1,5 +1,4 @@
 const {userService} = require("../services/index.js")
-const {exerciseCtrl} = require("../controllers")
 const {mongoose} = require("mongoose");
 const {log} = require("debug");
 const {UserModel} = require("../models/user.model.js")
