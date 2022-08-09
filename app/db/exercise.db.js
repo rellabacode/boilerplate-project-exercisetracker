@@ -5,21 +5,21 @@ const path = require("path")
 const {ObjectId} = require("mongodb");
 const scriptName = path.basename(__filename)
 
-const create = (objectid, username, description, duration, date) => {
+const create = (exerciseid, user, description, duration, date) => {
     let baseLog = "(" + scriptName + ")::create exercise "
     let baseLogError = "(" + scriptName + "):: " + arguments.callee.name + " ERROR "
     return new Promise(async function (resolve, reject) {
-        console.log(baseLog + " user " + username)
+        console.log(baseLog + " user " + user.username)
 
         const exercise = new ExerciseModel({
-            username: username,
+            username: user.username,
             description: description,
             duration: duration,
             date: date
         })
 
-        if (objectid)
-            exercise._id = objectid
+        if (exerciseid)
+            exercise._id = exerciseid
 
         console.log(baseLog + "exercise to persist")
         // console.log(exercise)
@@ -37,6 +37,7 @@ const create = (objectid, username, description, duration, date) => {
 
             if (newExercise) {
                 newExercise.date = new Date(newExercise.date).toDateString()
+                newExercise._id = user._id
                 // newExercise.date = newExercise.date.toDateString()
                 resolve(newExercise)
             }

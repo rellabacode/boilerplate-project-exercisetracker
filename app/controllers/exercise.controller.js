@@ -52,16 +52,16 @@ const create = async function (req, res, next) {
         console.log(baseLog + "res axios ok? " + !!(user && user.data && user.data._id))
 
         if (user && user.data && user.data._id) {
-            let objectid = req.body[":_id"]
-            if (objectid) {
+            let exerciseid = req.body[":_id"]
+            if (exerciseid) {
                 try {
-                    let valid = new ObjectId(objectid)
+                    let valid = new ObjectId(exerciseid)
                 } catch (e) {
                     console.error(baseLogError)
                     return next({status: 400, message: "Wrong object :_id"})
                 }
             } else {
-                objectid = undefined
+                exerciseid = undefined
             }
 
             console.log(baseLog + "searching for user " + baseUrl(req) + "/api/users/" + userId)
@@ -100,7 +100,7 @@ const create = async function (req, res, next) {
             // })
 
             console.log(user.data._id, description, duration, date)
-            const exercise = await exerciseService.create(objectid, user.data.username, description, duration, date)
+            const exercise = await exerciseService.create(exerciseid, user.data, description, duration, date)
             return res.status(200).send(exercise)
         }
 
