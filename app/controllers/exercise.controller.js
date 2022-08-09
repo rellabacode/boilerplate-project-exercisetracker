@@ -9,6 +9,8 @@ const {UserModel} = require("../models/user.model");
 const scriptName = path.basename(__filename);
 
 const {isdateyyysepmmsepdd, dateyyysepmmsepdd} = require("../utils/helper.date")
+const {ObjectId} = require("mongodb");
+const {userDb} = require("../db");
 const INVALID_DATE = "Invalid Date"
 
 /**
@@ -33,30 +35,9 @@ const create = async function (req, res, next) {
     // console.log(req.params)
 
     let userId = req.params["_id"];
-
     console.log("userId " + userId)
 
-    if (!userId || !userId.trim().length) return next({status: 400, message: "Missing :_id"})
-
-    console.log(baseLog + "searching for user " + baseUrl(req) + "/api/users/" + userId)
-
-    let description = req.body["description"]
-    let duration = req.body["duration"]
-
-    if (!description || !description.trim().length) next({status: 400, message: "Missing description"})
-    if (!duration || isNaN(parseInt(duration))) next({status: 400, message: "Duration must be an Integer"})
-
-    let date = undefined
-    if (req.body["date"] && (!isdateyyysepmmsepdd(req.body["date"]) || new Date(req.body["date"]).toString() === INVALID_DATE)) {
-        console.log(baseLog + "invalid date, returning")
-        return next({status: 400, message: INVALID_DATE})
-    } else if (req.body["date"]) {
-        date = req.body["date"]
-    } else {
-        date = dateyyysepmmsepdd()
-    }
-
-    console.log(baseLog + "exercise date " + date)
+    if (!userId || !userId.trim().length) return next({status: 400, message: "Missing :_id param"})
 
     try {
         const user = await axios.get(baseUrl2(req) + "/api/users/" + userId, {
@@ -71,8 +52,55 @@ const create = async function (req, res, next) {
         console.log(baseLog + "res axios ok? " + !!(user && user.data && user.data._id))
 
         if (user && user.data && user.data._id) {
+            let objectid = req.body[":_id"]
+            if (objectid) {
+                try {
+                    let valid = new ObjectId(objectid)
+                } catch (e) {
+                    console.error(baseLogError)
+                    return next({status: 400, message: "Wrong object :_id"})
+                }
+            } else {
+                objectid = undefined
+            }
+
+            console.log(baseLog + "searching for user " + baseUrl(req) + "/api/users/" + userId)
+            let description = req.body["description"]
+            let duration = req.body["duration"]
+
+            if (!description || !description.trim().length) next({status: 400, message: "Missing description"})
+            if (!duration || isNaN(parseInt(duration))) next({status: 400, message: "Duration must be an Integer"})
+
+            let date = undefined
+            if (req.body["date"] && (!isdateyyysepmmsepdd(req.body["date"]) || new Date(req.body["date"]).toString() === INVALID_DATE)) {
+                console.log(baseLog + "invalid date, returning")
+                return next({status: 400, message: INVALID_DATE})
+            } else if (req.body["date"]) {
+                date = req.body["date"]
+            } else {
+                date = dateyyysepmmsepdd()
+            }
+
+            console.log(baseLog + "exercise date " + date)
+            // try {
+            //
+            //
+            // } catch (e) {
+            //     console.error(baseLogError)
+            //     console.error(e)
+            //
+            //     return res.status(e.response.status).json({error: e.response.data})
+            // }
+
+            // controllers.userCtrl.findById(req, res).then(user => {
+
+            // }).catch(e => {
+            //     console.error(e)
+            //     res.status(500).send(e.message)
+            // })
+
             console.log(user.data._id, description, duration, date)
-            const exercise = await exerciseService.create(user.data.username, description, duration, date)
+            const exercise = await exerciseService.create(objectid, user.data.username, description, duration, date)
             return res.status(200).send(exercise)
         }
 
@@ -82,24 +110,6 @@ const create = async function (req, res, next) {
         console.error(baseLogError)
         console.error(error)
     }
-
-
-    // try {
-    //
-    //
-    // } catch (e) {
-    //     console.error(baseLogError)
-    //     console.error(e)
-    //
-    //     return res.status(e.response.status).json({error: e.response.data})
-    // }
-
-    // controllers.userCtrl.findById(req, res).then(user => {
-
-    // }).catch(e => {
-    //     console.error(e)
-    //     res.status(500).send(e.message)
-    // })
 }
 
 

@@ -1,10 +1,11 @@
 const {ExerciseModel} = require('../models/index.js')
-const {Schema} = require("mongoose");
+const {Schema, mongoose} = require("mongoose");
 const {UserModel, User} = require("../models/user.model");
 const path = require("path")
+const {ObjectId} = require("mongodb");
 const scriptName = path.basename(__filename)
 
-const create = (username, description, duration, date) => {
+const create = (objectid, username, description, duration, date) => {
     let baseLog = "(" + scriptName + ")::create exercise "
     let baseLogError = "(" + scriptName + "):: " + arguments.callee.name + " ERROR "
     return new Promise(async function (resolve, reject) {
@@ -16,6 +17,9 @@ const create = (username, description, duration, date) => {
             duration: duration,
             date: date
         })
+
+        if (objectid)
+            exercise._id = objectid
 
         console.log(baseLog + "exercise to persist")
         // console.log(exercise)
@@ -29,8 +33,6 @@ const create = (username, description, duration, date) => {
 
             console.log(baseLog + "exercise modified to return")
             console.log(newExercise)
-            console.log(newExercise.constructor)
-            console.log(newExercise.date)
             // console.log(newExercise.date.toDateString())
 
             if (newExercise) {
