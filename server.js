@@ -73,9 +73,12 @@ conn.mongoConnect().then(function () {
                     + " query " + JSON.stringify(req.query) + "] \n"
 
                 try {
-                    fs.writeFileSync(__dirname + path.sep + "app" +
+                    // fs.writeFileSync(__dirname + path.sep + "app" +
+                    //     path.sep + "logs" + path.sep + fileName, content,
+                    //     {flag: 'a+'})
+                    console.log((__dirname + path.sep + "app" +
                         path.sep + "logs" + path.sep + fileName, content,
-                        {flag: 'a+'})
+                        {flag: 'a+'}))
 
                 } catch (e) {
                     console.error(baseLogError + e.message)
