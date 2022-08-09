@@ -8,6 +8,7 @@ const path = require("path")
 const {UserModel} = require("../models/user.model");
 const scriptName = path.basename(__filename);
 
+const {isdateyyysepmmsepdd, dateyyysepmmsepdd} = require("../utils/helper.date")
 const INVALID_DATE = "Invalid Date"
 
 /**
@@ -33,7 +34,7 @@ const create = async function (req, res, next) {
 
     let userId = req.params["_id"];
 
-    console.log("userId "+userId)
+    console.log("userId " + userId)
 
     if (!userId || !userId.trim().length) return next({status: 400, message: "Missing :_id"})
 
@@ -45,16 +46,17 @@ const create = async function (req, res, next) {
     if (!description || !description.trim().length) next({status: 400, message: "Missing description"})
     if (!duration || isNaN(parseInt(duration))) next({status: 400, message: "Duration must be an Integer"})
 
-    let date = new Date();
-    if (req.body["date"]) date = new Date(req.body["date"]);
-
-    console.log(baseLog + "exercise date " + date.toDateString())
-
-    if (date.toString() === INVALID_DATE) {
+    let date = undefined
+    if (req.body["date"] && (!isdateyyysepmmsepdd(req.body["date"]) || new Date(req.body["date"]).toString() === INVALID_DATE)) {
         console.log(baseLog + "invalid date, returning")
         return next({status: 400, message: INVALID_DATE})
-        // return res.status(400).json({error: INVALID_DATE})
+    } else if (req.body["date"]) {
+        date = req.body["date"]
+    } else {
+        date = dateyyysepmmsepdd()
     }
+
+    console.log(baseLog + "exercise date " + date)
 
     try {
         const user = await axios.get(baseUrl2(req) + "/api/users/" + userId, {
@@ -62,15 +64,15 @@ const create = async function (req, res, next) {
                 'user-agent': 'not axios',
             }
         }).catch(function (error) {
-            console.error(baseLogError+error.message)
+            console.error(baseLogError + error.message)
             return next({status: 400, message: error.message})
         })
 
-        console.log(baseLog + "res axios ok? "+!!(user && user.data && user.data._id))
+        console.log(baseLog + "res axios ok? " + !!(user && user.data && user.data._id))
 
         if (user && user.data && user.data._id) {
             console.log(user.data._id, description, duration, date)
-            const exercise = await exerciseService.create(user.data, description, duration, date.toDateString())
+            const exercise = await exerciseService.create(user.data.username, description, duration, date)
             return res.status(200).send(exercise)
         }
 

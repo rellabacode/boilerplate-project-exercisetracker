@@ -20,17 +20,17 @@ const create = async (username) => {
         let baseLog = "(" + scriptName + "):: " + Object.values(this)[0].name + " "
         let baseLogError = "(" + scriptName + "):: " + arguments.callee.name + " ERROR "
         console.log(baseLog + "user to create")
-        console.log(user)
+        // console.log(user)
 
         try {
             const newUser = await user.save()
             console.log(baseLog + "user created")
-            console.log(newUser)
+            // console.log(newUser)
 
             let finalUser = await UserModel.findById(newUser._id).select("-__v").exec()
 
             console.log(baseLog + "user modified to return")
-            console.log(finalUser)
+            // console.log(finalUser)
 
             resolve(finalUser)
         } catch (e) {
@@ -66,7 +66,7 @@ const findById = async (id) => {
         const user = await User.findById(id).exec()
 
         console.log(baseLog + "returning user:")
-        console.log(user)
+        // console.log(user)
         return user
     } catch (e) {
         console.error(baseLogError)
@@ -84,7 +84,7 @@ const findByUsername = async (username) => {
     try {
         const user = await User.find({username: username}).exec()
         console.log(baseLog + "retornando")
-        console.log(user)
+        // console.log(user)
         return user;
         // resolve(user)
     } catch (e) {
@@ -101,6 +101,9 @@ const getAll = function () {
         try {
             User.find(function (err, data) {
                 if (err) reject(err)
+
+                console.log(data.constructor)
+
                 resolve(data)
             })
         } catch (e) {

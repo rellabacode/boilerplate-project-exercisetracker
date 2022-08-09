@@ -1,12 +1,18 @@
 const express = require('express')
-const http = require('http')
 const app = express()
 const routes = require('./app/routes/index.js')
 // const cors = require('cors')
 const bodyParser = require('body-parser')
 const db = require('./app/db/conn.db.js')
+const {EOL} = require("os")
 const path = require('path');
 const scriptName = path.basename(__filename);
+
+const fs = require('fs')
+
+// var requestsLog = fs.createWriteStream(__dirname + path.sep + "app" +
+//     path.sep + "logs" + path.sep + "requests.log", {flags: 'a'})
+
 
 const enableCORS = function (req, res, next) {
     if (!process.env.DISABLE_XORIGIN) {
@@ -53,12 +59,30 @@ conn.mongoConnect().then(function () {
             // a middleware with no mount path; gets executed for every request to the app
             app.use(function (req, res, next) {
                 let baseLog = "(Middleware every request) "
-                console.log(baseLog+"user-agent "+req.header("user-agent"))
+                let baseLogError = "ERROR (Middleware every request) "
+
                 if (req.header("user-agent") === "not axios") return next()
 
-                console.log(baseLog+"original "+JSON.stringify(req.originalUrl))
-                console.log(baseLog+"body "+JSON.stringify(req.body))
-                console.log(baseLog+"params "+JSON.stringify(req.params))
+                const d = new Date()
+                const fileName = "requests_" + d.getFullYear()
+                    + "_" + (d.getMonth() + 1) + "_" + d.getDate() + ".log"
+                const time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds()
+                const content = time + " [original " + JSON.stringify(req.originalUrl)
+                    + " body " + JSON.stringify(req.body)
+                    + " params " + JSON.stringify(req.params) + "\n"
+                    + " query " + JSON.stringify(req.query) + "] \n"
+
+                try {
+                    fs.writeFileSync(__dirname + path.sep + "app" +
+                        path.sep + "logs" + path.sep + fileName, content,
+                        {flag: 'a+'})
+
+                } catch (e) {
+                    console.error(baseLogError + e.message)
+                    console.log(baseLog + content)
+                }
+
+                // requestsLog.writeFile
                 next();
             });
 
